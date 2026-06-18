@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Jogo da Velha</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background: #f0f0f0; }
+        #status { font-size: 24px; margin: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(3, 100px); gap: 10px; justify-content: center; }
+        .cell { width: 100px; height: 100px; font-size: 36px; font-weight: bold; cursor: pointer; background: white; border: 2px solid #ccc; }
+        .cell:disabled { color: black; background: #e0e0e0; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+    <div id="status">Turno do Jogador: X</div>
+    <div class="grid" id="tabuleiro"></div>
+
+    <script>
+        let tabuleiro = Array(9).fill(" ");
+        let jogadorAtual = "X";
+        let rodadas = 0;
+        const grid = document.getElementById("tabuleiro");
+        const statusText = document.getElementById("status");
+
+        const combinacoes = [, [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6]
+        ];
+
+        function criarTabuleiro() {
+            grid.innerHTML = "";
+            for (let i = 0; i < 9; i++) {
+                let btn = document.createElement("button");
+                btn.classList.add("cell");
+                btn.addEventListener("click", () => clicarBotao(i, btn));
+                grid.appendChild(btn);
+            }
+        }
+
+        function clicarBotao(posicao, btn) {
+            tabuleiro[posicao] = jogadorAtual;
+            btn.innerText = jogadorAtual;
+            btn.disabled = true;
+            rodadas++;
+
+            if (verificarVencedor()) {
+                setTimeout(() => { alert(`Parabéns! Jogador ${jogadorAtual} venceu!`); reiniciarJogo(); }, 50);
+                return;
+            }
+
+            if (rodadas === 9) {
+                setTimeout(() => { alert("Empate!"); reiniciarJogo(); }, 50);
+                return;
+            }
+
+            jogadorAtual = jogadorAtual === "X" ? "O" : "X";
+            statusText.innerText = `Turno do Jogador: ${jogadorAtual}`;
+        }
+
+        function verificarVencedor() {
+            return combinacoes.some(comb => comb.every(pos => tabuleiro[pos] === jogadorAtual));
+        }
+
+        function reiniciarJogo() {
+            tabuleiro.fill(" ");
+            jogadorAtual = "X";
+            rodadas = 0;
+            statusText.innerText = "Turno do Jogador: X";
+            criarTabuleiro();
+        }
+
+        criarTabuleiro();
+    </script>
+</body>
+</html>
